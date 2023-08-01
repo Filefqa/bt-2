@@ -22,6 +22,12 @@ fn start_game(students: &Vec<Student>) {
         't' => "Trinity",
         'g' => "Gehenna",
         'm' => "Millenium",
+        'v' => "Valkyrie",
+        'h' => "Hyakkiyako",
+        'u' => "Arius",
+        'r' => "Red Winter",
+        'j' => "Shanhaijing",
+        's' => "SRT",
         _ => "Undefined",
     };
     centered(&["Guess the ~~", answer_school, "~~ student"].concat()[..], true);
