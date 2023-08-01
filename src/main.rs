@@ -1,6 +1,5 @@
 use std::io::{self, Write};
 use std::fs;
-use std::cmp::Ordering;
 use rand::Rng;
 
 struct Student<'a> {
@@ -10,71 +9,49 @@ struct Student<'a> {
 }
 
 fn start_game(students: &Vec<Student>) {
-    let schools: [(char, &str); 4] = [('a', "Abydos"), ('t', "Trinity"), ('g', "Gehenna"), ('m', "Millenium")];
-    let secret_id: usize = rand::thread_rng().gen_range(0..students.len());
-    let mut secret_full: &str = "";
-    for (short_s, full_s) in schools {
-        if students[secret_id].school == short_s {
-            secret_full = full_s;
-            break;
-        }
-    } 
-    println!("      Guess the ~~{}~~ student", secret_full);
+    let answer: usize = rand::thread_rng().gen_range(0..students.len());
+    let answer: &Student = &students[answer];
+    let answer_school: &str = match answer.school {
+        'a' => "Abydos",
+        't' => "Trinity",
+        'g' => "Gehenna",
+        'm' => "Millenium",
+        _ => "Undefined",
+    };
+    println!("      Guess the ~~{}~~ student", answer_school);
     println!("-----------------------------------------");
     loop {
-        match start_turn(students, secret_id) {
-            Ok(i) => {if i == 0 {break;}},
-            Err(_) => {break;}
+        if let Ok(true) = next_turn(students, answer)  {
+            break;
         }
     }
 }
 
-fn request_guess(guess: &mut String) -> Result<usize, io::Error> {
+fn next_turn(students: &Vec<Student>, answer: &Student) -> Result<bool, io::Error> {
+    let mut guess: String = String::new();
     print!("Your guess: ");
     io::stdout().flush()?;
-    io::stdin().read_line(guess)?;
-    Ok(guess.len())
-}
-
-fn start_turn(students: &Vec<Student>, secret_id: usize) -> Result<i32, io::Error> {
-    let mut guess: String = String::new();
-    request_guess(&mut guess)?;
+    io::stdin().read_line(&mut guess)?;
     guess = String::from(guess.trim());
-    let mut gstat: i32 = 0;
-    let mut guess_id: usize = 0;
-    for st in 0..students.len() {
-        if students[st].name == guess.to_ascii_lowercase() {
-            gstat = if students[secret_id].school == students[st].school {1} else {2};
-            guess_id = st;
+    for student in students {
+        if student.name == guess.to_ascii_lowercase() {
+            if student.name == answer.name {
+                println!("( > w <) That's correct!");
+                return Ok(true);
+            } else if student.school != answer.school {
+                println!("( ^ - ^) That's a student from a different school");
+            }  else if student.height < answer.height {
+                println!("( ^ - ^) Too short! ({} cm)", student.height);
+            } else if student.height > answer.height {
+                println!("( ^ - ^) Too tall! ({} cm)", student.height);
+            } else {
+                println!("( 0 o 0) Same height, different name! ({} cm)", student.height);
+            }
+            return Ok(false);
         }
     }
-    if guess_id == secret_id {
-        println!("( > w <) That's correct!");
-        return Ok(0);
-    }
-    match gstat {
-        0 => {
-            println!("( > _ <) That's not a valid student name");
-            return Ok(1);
-        },
-        2 => {
-            println!("( ^ - ^) That's a student from a different school");
-            return Ok(1);
-        },
-        _ => {},
-    }
-    match students[guess_id].height.cmp(&students[secret_id].height) {
-        Ordering::Less => {
-            println!("( ^ - ^) Too short! ({} cm)", students[guess_id].height);
-        },
-        Ordering::Greater => {
-            println!("( ^ - ^) Too tall! ({} cm)", students[guess_id].height);
-        },
-        Ordering::Equal => {
-            println!("( 0 o 0) Same hight, different name! ({} cm)", students[guess_id].height);
-        },
-    }
-    Ok(1)
+    println!("( > _ <) That's not a valid student name");
+    return Ok(false);
 }
 
 fn main() {
