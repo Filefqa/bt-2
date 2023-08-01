@@ -9,8 +9,9 @@ struct Student<'a> {
 }
 
 fn centered(msg: &str, end: bool) {
-    println!("{}{}", vec![" "; msg.len() / 2].concat(), msg);
-    if end {println!("{}", ["-"; 32].concat());}
+    let sps: usize = if 50 - msg.len() > 0 {(50 - msg.len()) / 2} else {0};
+    println!("{}{}", vec![" "; sps].concat(), msg);
+    if end {println!("{}", ["-"; 50].concat());}
 }
 
 fn start_game(students: &Vec<Student>) {
@@ -25,36 +26,38 @@ fn start_game(students: &Vec<Student>) {
     };
     centered(&["Guess the ~~", answer_school, "~~ student"].concat()[..], true);
     loop {
-        if let Ok(true) = next_turn(students, answer) {
-            break;
+        match next_turn(students, answer) {
+            Ok(true) => {break;},
+            Err(_) => {println!("> [ ( > _ <) ] I can't read this...");},
+            Ok(false) => {},
         }
     }
 }
 
 fn next_turn(students: &Vec<Student>, answer: &Student) -> Result<bool, io::Error> {
     let mut guess: String = String::new();
-    print!("> Your guess: ");
+    print!("> [Your guess] ");
     io::stdout().flush()?;
     io::stdin().read_line(&mut guess)?;
     guess = String::from(guess.trim());
     for student in students {
         if student.name == guess.to_ascii_lowercase() {
             if student.name == answer.name {
-                println!("( > w <) That's correct!");
+                println!("> [ ( > w <) ] That's correct!");
                 return Ok(true);
             } else if student.school != answer.school {
-                println!("( ^ - ^) That's a student from a different school");
+                println!("> [ ( ^ - ^) ] She's from a different school");
             }  else if student.height < answer.height {
-                println!("( ^ - ^) Too short! ({} cm)", student.height);
+                println!("> [ ( ^ - ^) ] Too short! ({} cm)", student.height);
             } else if student.height > answer.height {
-                println!("( ^ - ^) Too tall! ({} cm)", student.height);
+                println!("> [ ( ^ - ^) ] Too tall! ({} cm)", student.height);
             } else {
-                println!("( 0 o 0) Same height, different name! ({} cm)", student.height);
+                println!("> [ ( 0 o 0) ] Same height, different name! ({} cm)", student.height);
             }
             return Ok(false);
         }
     }
-    println!("( > _ <) That's not a valid student name");
+    println!("> [ ( > _ <) ] That's not a valid student name");
     return Ok(false);
 }
 
