@@ -8,6 +8,11 @@ struct Student<'a> {
     height: i32,
 }
 
+fn centered(msg: &str, end: bool) {
+    println!("{}{}", vec![" "; msg.len() / 2].concat(), msg);
+    if end {println!("{}", ["-"; 32].concat());}
+}
+
 fn start_game(students: &Vec<Student>) {
     let answer: usize = rand::thread_rng().gen_range(0..students.len());
     let answer: &Student = &students[answer];
@@ -18,10 +23,9 @@ fn start_game(students: &Vec<Student>) {
         'm' => "Millenium",
         _ => "Undefined",
     };
-    println!("      Guess the ~~{}~~ student", answer_school);
-    println!("-----------------------------------------");
+    centered(&["Guess the ~~", answer_school, "~~ student"].concat()[..], true);
     loop {
-        if let Ok(true) = next_turn(students, answer)  {
+        if let Ok(true) = next_turn(students, answer) {
             break;
         }
     }
@@ -29,7 +33,7 @@ fn start_game(students: &Vec<Student>) {
 
 fn next_turn(students: &Vec<Student>, answer: &Student) -> Result<bool, io::Error> {
     let mut guess: String = String::new();
-    print!("Your guess: ");
+    print!("> Your guess: ");
     io::stdout().flush()?;
     io::stdin().read_line(&mut guess)?;
     guess = String::from(guess.trim());
@@ -66,9 +70,8 @@ fn main() {
             height: student_data[2].parse().expect("Couldn't read database"),
         });
     }
-    println!("------------------------------------------");
-    println!("   Guess the Blue Archive girl! [v0.2.0]");
-    println!("         Made by Filefqa ( O w O)");
-    println!("-----------------------------------------");
+    centered("", true);
+    centered("BT-2 : Guess the Blue Archive Girl", false);
+    centered("Made by Filefqa ( O w O)", true);
     start_game(&students);
 }
