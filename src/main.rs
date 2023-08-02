@@ -30,7 +30,7 @@ fn start_game(students: &Vec<Student>) {
         's' => "SRT",
         _ => "Undefined",
     };
-    centered(&["Guess the ~~", answer_school, "~~ student"].concat()[..], true);
+    centered(&["Guess the ~", answer_school, "~ student"].concat()[..], true);
     loop {
         match next_turn(students, answer) {
             Ok(true) => {break;},
@@ -58,7 +58,7 @@ fn next_turn(students: &Vec<Student>, answer: &Student) -> Result<bool, io::Erro
             } else if student.height > answer.height {
                 println!("> [ ( ^ - ^) ] Too tall! ({} cm)", student.height);
             } else {
-                println!("> [ ( 0 o 0) ] Same height, different name! ({} cm)", student.height);
+                println!("> [ ( O - O) ] Same height, but different name! ({} cm)", student.height);
             }
             return Ok(false);
         }
@@ -71,15 +71,15 @@ fn main() {
     let database: String = fs::read_to_string("students.dat").expect("Couldn't access database");
     let database: Vec<&str> = database.split('\n').collect();
     let mut students: Vec<Student> = Vec::new();
-    for w in 0..database.len() {
-        let student_data: Vec<&str> = database[w].trim().split(' ').collect();
+    for entry in database {
+        let data: Vec<&str> = entry.trim().split(' ').collect();
         students.push(Student {
-            name: student_data[0],
-            school: student_data[1].chars().nth(0).expect("Couldn't read database"),
-            height: student_data[2].parse().expect("Couldn't read database"),
+            name: data[0],
+            school: data[1].chars().nth(0).expect("Couldn't read database"),
+            height: data[2].parse().expect("Couldn't read database"),
         });
     }
-    centered("", true);
+    println!("{}", ["-"; 48].concat());
     centered("BT-2 : Guess the Blue Archive Girl", false);
     centered("Made by Filefqa ( O w O)", true);
     start_game(&students);
