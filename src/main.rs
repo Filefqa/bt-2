@@ -9,9 +9,9 @@ struct Student<'a> {
 }
 
 fn centered(msg: &str, end: bool) {
-    let sps: usize = if 50 - msg.len() > 0 {(50 - msg.len()) / 2} else {0};
+    let sps: usize = if 48 - msg.len() > 0 {(48 - msg.len()) / 2} else {0};
     println!("{}{}", vec![" "; sps].concat(), msg);
-    if end {println!("{}", ["-"; 50].concat());}
+    if end {println!("{}", ["-"; 48].concat());}
 }
 
 fn start_game(students: &Vec<Student>) {
